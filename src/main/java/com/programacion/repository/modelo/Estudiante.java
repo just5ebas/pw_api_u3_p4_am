@@ -32,6 +32,9 @@ public class Estudiante {
 	@Column(name = "estu_fecha_nacimiento")
 	private LocalDateTime fechaNacimiento;
 
+	@Column(name = "estu_provincia")
+	private String provincia;
+
 	// GET & SET
 	public Integer getId() {
 		return id;
@@ -71,6 +74,14 @@ public class Estudiante {
 
 	public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
+	}
+
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
 	}
 
 }

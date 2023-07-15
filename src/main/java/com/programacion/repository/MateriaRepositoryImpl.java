@@ -1,11 +1,14 @@
 package com.programacion.repository;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import com.programacion.repository.modelo.Materia;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
@@ -17,13 +20,13 @@ public class MateriaRepositoryImpl implements IMateriaRepository {
 	private EntityManager entityManager;
 
 	@Override
-	public Materia consultarPorId(Integer id) {
+	public Materia buscarPorId(Integer id) {
 		// TODO Auto-generated method stub
 		return this.entityManager.find(Materia.class, id);
 	}
 
 	@Override
-	public Materia consultarPorNombre(String nombre) {
+	public Materia buscarPorNombre(String nombre) {
 		// TODO Auto-generated method stub
 		TypedQuery<Materia> myQuery = this.entityManager.createQuery("SELECT m FROM Materia m WHERE m.nombre = :nombre",
 				Materia.class);
@@ -35,6 +38,35 @@ public class MateriaRepositoryImpl implements IMateriaRepository {
 	public void insertar(Materia materia) {
 		// TODO Auto-generated method stub
 		this.entityManager.persist(materia);
+	}
+
+	@Override
+	public void actualizar(Materia materia) {
+		// TODO Auto-generated method stub
+		this.entityManager.merge(materia);
+	}
+
+	@Override
+	public void actualizadoParcial(String nombreActual, String nombreNuevo) {
+		// TODO Auto-generated method stub
+		Query query = this.entityManager
+				.createQuery("UPDATE Materia m SET m.nombre = :datoNuevo WHERE m.nombre = :datoActual");
+		query.setParameter("datoNuevo", nombreNuevo);
+		query.setParameter("datoActual", nombreActual);
+		query.executeUpdate();
+	}
+
+	@Override
+	public void borrar(Integer id) {
+		// TODO Auto-generated method stub
+		this.entityManager.remove(this.buscarPorId(id));
+	}
+
+	@Override
+	public List<Materia> buscarTodos() {
+		// TODO Auto-generated method stub
+		TypedQuery<Materia> query = this.entityManager.createQuery("SELECT m FROM Materia m", Materia.class);
+		return query.getResultList();
 	}
 
 }
