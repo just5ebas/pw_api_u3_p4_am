@@ -24,36 +24,36 @@ public class MateriaControllerRestful {
 	private IMateriaService materiaService;
 
 	// POST
-	@PostMapping(path = "/generar")
+	@PostMapping
 	public void generarMateria(@RequestBody Materia materia) {
 		this.materiaService.registrarMateria(materia);
 	}
 
 	// GET
-	@GetMapping(path = "buscar/{id}")
+	@GetMapping(path = "/{id}")
 	public Materia buscarPorId(@PathVariable Integer id) {
 		return this.materiaService.buscarPorId(id);
 	}
 
-	@GetMapping(path = "buscarNombre/{nombre}")
+	@GetMapping(path = "/{nombre}")
 	public Materia buscarPorNombre(@PathVariable String nombre) {
 		return this.materiaService.buscarPorNombre(nombre);
 	}
 
-	@GetMapping(path = "/buscarTodos")
+	@GetMapping
 	public List<Materia> buscarTodos() {
 		return this.materiaService.mostrarTodos();
 	}
 
 	// PUT
-	@PutMapping(path = "/actualizar/{id}")
+	@PutMapping(path = "/{id}")
 	public void actualizar(@RequestBody Materia materia, @PathVariable Integer id) {
 		materia.setId(id);
 		this.materiaService.actualizar(materia);
 	}
 
 	// PATCH
-	@PatchMapping(path = "/actualizarParcial/{id}")
+	@PatchMapping(path = "/{id}")
 	public void actualizarParcial(@RequestBody Materia materia, @PathVariable Integer id) {
 		Materia materia2 = this.materiaService.buscarPorId(id);
 		materia2.setNombre(materia.getNombre());
@@ -61,7 +61,7 @@ public class MateriaControllerRestful {
 	}
 
 	// DELETE
-	@DeleteMapping(path = "/borrar/{id}")
+	@DeleteMapping(path = "/{id}")
 	public void borrar(@PathVariable Integer id) {
 		this.materiaService.borrar(id);
 	}
