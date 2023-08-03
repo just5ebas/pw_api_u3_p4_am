@@ -1,12 +1,17 @@
 package com.programacion.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,13 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programacion.repository.modelo.Estudiante;
 import com.programacion.service.IEstudianteService;
+import com.programacion.service.IMateriaService;
+import com.programacion.service.to.EstudianteTO;
+import com.programacion.service.to.MateriaTO;
 
 @RestController
 @RequestMapping("/estudiantes")
+@CrossOrigin
 public class EstudianteControllerRestful {
 
 	@Autowired
 	private IEstudianteService estudianteService;
+
+	@Autowired
+	private IMateriaService iMateriaService;
 
 	// GET
 //	@GetMapping(path = "/{cedula}")
@@ -42,9 +54,8 @@ public class EstudianteControllerRestful {
 		return this.estudianteService.consultarPorCedula(cedula);
 	}
 
-	@GetMapping(path = "/status/{cedula}")
+	@GetMapping(path = "/status/{cedula}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Estudiante> consultarPorCedulaStatus(@PathVariable String cedula) {
-		// String cedula = "1750844787";
 		return ResponseEntity.status(HttpStatus.OK).body(this.estudianteService.consultarPorCedula(cedula));
 	}
 
@@ -59,7 +70,7 @@ public class EstudianteControllerRestful {
 	}
 
 	// POST
-	@PostMapping(consumes = "application/xml")
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void guardar(@RequestBody Estudiante estudiante) {
 		this.estudianteService.guardar(estudiante);
 	}
@@ -82,6 +93,7 @@ public class EstudianteControllerRestful {
 	public void actualizar(@RequestBody Estudiante estudiante, @PathVariable Integer identificador) {
 		estudiante.setId(identificador);
 		this.estudianteService.actualizar(estudiante);
+
 	}
 
 	// PATCH
@@ -89,12 +101,40 @@ public class EstudianteControllerRestful {
 	public void actualizarParcial(@RequestBody Estudiante estudiante, @PathVariable Integer identificador) {
 		Estudiante estu1 = this.estudianteService.buscarPorId(identificador);
 		this.estudianteService.actualizarParcial(estu1.getCedula(), estudiante.getCedula());
+
 	}
 
 	// DELETE
-	@DeleteMapping(path = "/{id}")
-	public void borrar(@PathVariable Integer id) {
+	@DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Estudiante> borrar(@PathVariable Integer id) {
+		Estudiante estu = this.estudianteService.buscarPorId(id);
+
 		this.estudianteService.borrar(id);
+
+		return ResponseEntity.status(HttpStatus.OK).body(estu);
+	}
+
+	@GetMapping(path = "/hateoas", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EstudianteTO>> mostrarTodosHATEOAS() {
+		List<EstudianteTO> lista = this.estudianteService.buscarTodos();
+		// return ResponseEntity.status(HttpStatus.OK).body(lista);
+		for (EstudianteTO e : lista) {
+			Link myLink = linkTo(methodOn(EstudianteControllerRestful.class).buscarPorEstudiante(e.getCedula()))
+					.withRel("materias");
+			e.add(myLink);
+		}
+		return new ResponseEntity<>(lista, null, 200);
+	}
+
+	@GetMapping(path = "/{cedula}/materias", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MateriaTO>> buscarPorEstudiante(@PathVariable String cedula) {
+		List<MateriaTO> lista = this.iMateriaService.buscarPorCedulaEstudiante(cedula);
+		for (MateriaTO mat : lista) {
+			Link myLink = linkTo(methodOn(MateriaControllerRestful.class).buscarPorId(mat.getId())).withSelfRel();
+			mat.add(myLink);
+		}
+
+		return new ResponseEntity<>(lista, null, 200);
 	}
 
 }

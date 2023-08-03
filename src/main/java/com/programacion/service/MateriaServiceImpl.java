@@ -1,12 +1,14 @@
 package com.programacion.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.programacion.repository.IMateriaRepository;
 import com.programacion.repository.modelo.Materia;
+import com.programacion.service.to.MateriaTO;
 
 @Service
 public class MateriaServiceImpl implements IMateriaService {
@@ -45,9 +47,28 @@ public class MateriaServiceImpl implements IMateriaService {
 	}
 
 	@Override
-	public List<Materia> mostrarTodos() {
+	public List<MateriaTO> buscarPorCedulaEstudiante(String cedula) {
 		// TODO Auto-generated method stub
-		return this.materiaRepository.buscarTodos();
+		return this.materiaRepository.buscarPorCedulaEstudiante(cedula).stream().map(mat -> this.convertir(mat))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<MateriaTO> mostrarTodos() {
+		// TODO Auto-generated method stub
+//		return this.materiaRepository.buscarTodos().stream;
+		return this.materiaRepository.mostrarTodos().stream().map(mat -> this.convertir(mat))
+				.collect(Collectors.toList());
+	}
+
+	private MateriaTO convertir(Materia materia) {
+		MateriaTO matTO = new MateriaTO();
+
+		matTO.setId(materia.getId());
+		matTO.setCreditos(materia.getCreditos());
+		matTO.setNombre(materia.getNombre());
+
+		return matTO;
 	}
 
 }

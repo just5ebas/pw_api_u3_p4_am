@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programacion.repository.modelo.Materia;
 import com.programacion.service.IMateriaService;
+import com.programacion.service.to.MateriaTO;
 
 @RestController
 @RequestMapping("/materias")
@@ -41,7 +42,7 @@ public class MateriaControllerRestful {
 	}
 
 	@GetMapping
-	public List<Materia> buscarTodos() {
+	public List<MateriaTO> buscarTodos() {
 		return this.materiaService.mostrarTodos();
 	}
 

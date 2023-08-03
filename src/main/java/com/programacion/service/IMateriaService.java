@@ -3,6 +3,7 @@ package com.programacion.service;
 import java.util.List;
 
 import com.programacion.repository.modelo.Materia;
+import com.programacion.service.to.MateriaTO;
 
 public interface IMateriaService {
 
@@ -16,6 +17,8 @@ public interface IMateriaService {
 
 	public void borrar(Integer id);
 
-	public List<Materia> mostrarTodos();
+	public List<MateriaTO> buscarPorCedulaEstudiante(String cedula);
+
+	public List<MateriaTO> mostrarTodos();
 
 }
